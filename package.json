@@ -1,0 +1,40 @@
+{
+  "name": "ai-image-app",
+  "version": "1.0.0",
+  "description": "AI Image App - An Electron-based application for AI-generated images.",
+  "author": "Your Name or Company",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "make": "electron-forge make"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^6.0.0",
+    "@electron-forge/maker-squirrel": "^6.0.0",
+    "@electron-forge/maker-zip": "^6.0.0",
+    "electron": "^27.0.0"
+  },
+  "config": {
+    "forge": {
+      "packagerConfig": {},
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "ai-image-app",
+            "authors": "Your Name or Company",
+            "description": "AI Image App - An Electron-based application for AI-generated images.",
+            "outputDirectory": "C:\\Users\\zedni\\Desktop\\ai-image-app-dist"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": ["win32"],
+          "config": {
+            "outDir": "C:\\Users\\zedni\\Desktop\\ai-image-app-dist"
+          }
+        }
+      ]
+    }
+  }
+}

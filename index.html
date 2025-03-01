@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>واجهة ثلاثية الأعمدة مع قائمة File</title>
+    <style>
+        /* تحسينات التصميم */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        header h1 {
+            font-size: 2rem;
+            color: #333;
+            margin: 0;
+        }
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .save-btn, .add-card-btn {
+            background-color: #6c757d; /* لون باهت */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        .save-btn:hover, .add-card-btn:hover {
+            background-color: #5a6268; /* لون أغمق قليلاً عند التمرير */
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 أعمدة للشاشات الكبيرة */
+            gap: 20px;
+        }
+        .card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            text-align: center;
+            position: relative;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .image-preview {
+            max-width: 100%;
+            height: auto;
+            margin-top: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+        }
+        .prompt-input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            direction: rtl;
+        }
+        .drop-zone {
+            border: 2px dashed #007bff;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            color: #007bff;
+            margin-bottom: 10px;
+            transition: background-color 0.3s;
+            border-radius: 5px;
+        }
+        .drop-zone.dragover {
+            background-color: #e9ecef;
+        }
+        .buttons-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        .copy-btn, .delete-btn, .share-btn {
+            background-color: #e9ecef; /* لون باهت */
+            color: #333; /* لون النص داكن */
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background-color 0.3s;
+            margin: 5px;
+        }
+        .copy-btn:hover, .delete-btn:hover, .share-btn:hover {
+            background-color: #d6d8db; /* لون أغمق قليلاً عند التمرير */
+        }
+        .delete-btn {
+            background-color: #f8d7da; /* لون باهت للحذف */
+            color: #721c24; /* لون النص داكن */
+        }
+        .delete-btn:hover {
+            background-color: #f5c6cb; /* لون أغمق قليلاً عند التمرير */
+        }
+        .share-btn {
+            background-color: #d4edda; /* لون باهت للمشاركة */
+            color: #155724; /* لون النص داكن */
+        }
+        .share-btn:hover {
+            background-color: #c3e6cb; /* لون أغمق قليلاً عند التمرير */
+        }
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: none;
+        }
+        /* قائمة سياقية */
+        .context-menu {
+            position: absolute;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: none;
+        }
+        .context-menu-item {
+            padding: 10px;
+            cursor: pointer;
+            color: #333;
+        }
+        .context-menu-item:hover {
+            background-color: #f0f0f0;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #fff;
+            border-top: 1px solid #ddd;
+            margin-top: 20px;
+        }
+        .contact-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .contact-info {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .contact-info p {
+            margin: 5px 0;
+        }
+        .contact-info a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .contact-info a:hover {
+            text-decoration: underline;
+        }
+
+        /* التصميم المتجاوب */
+        @media (max-width: 1200px) {
+            .gallery {
+                grid-template-columns: repeat(3, 1fr); /* 3 أعمدة للأجهزة اللوحية */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(2, 1fr); /* عمودين للهواتف الكبيرة */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gallery {
+                grid-template-columns: 1fr; /* عمود واحد للهواتف الصغيرة */
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>مشروع توليد الصور بالذكاء الاصطناعي</h1>
+        <div class="header-buttons">
+            <button class="save-btn" onclick="saveData()">💾 حفظ المشروع</button>
+            <button class="add-card-btn" onclick="addCard()">إضافة بطاقة جديدة</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- إشعار -->
+        <div id="notification" class="notification">تمت العملية بنجاح!</div>
+
+        <!-- معرض البطاقات -->
+        <div class="gallery" id="card-gallery"></div>
+
+        <!-- قائمة سياقية -->
+        <div id="context-menu" class="context-menu">
+            <div class="context-menu-item" id="reset-image-context">🔄 إعادة تعيين الصورة</div>
+            <div class="context-menu-item" id="edit-text-context">📝 تعديل النص</div>
+            <div class="context-menu-item" id="exit-app-context">🚪 الخروج من البرنامج</div>
+        </div>
+    </div>
+
+    <footer>
+        <button class="contact-btn" onclick="toggleContactInfo()">للتواصل والدعم</button>
+        <div id="contact-info" class="contact-info">
+            <p>شكرًا لتفاعلك!</p>
+            <p>نودّ معرفة رأيك في جودة الصور والتصميم.</p>
+            <p>✅ 👍 مفيد</p>
+            <p>❌ 👎 غير دقيق</p>
+            <p>📝 💬 لدي ملاحظة</p>
+            <p>✅ 📲 <a href="https://wa.me/966552191598" target="_blank">واتساب</a></p>
+            <p>📌 👤 الاسم: د. عبدالرحمن الزراعي</p>
+            <p>📞 📱 رقم الجوال: +966552191598</p>
+            <p>📧 📩 البريد الإلكتروني: <a href="mailto:zraieee@gmail.com">zraieee@gmail.com</a></p>
+            <p>❤️ <a href="https://www.paypal.com/paypalme/zraiee" target="_blank">دعم البوت مادياً</a></p>
+        </div>
+    </footer>
+
+    <script>
+        const notification = document.getElementById('notification');
+        function showNotification() {
+            notification.style.display = 'block';
+            setTimeout(() => notification.style.display = 'none', 3000);
+        }
+
+        // مسار الحفظ الموحد
+        const SAVE_PATH = 'C:\\Users\\zedni\\ai-image-app\\All';
+
+        // التحقق من وجود المسار وإنشاؤه إذا لم يكن موجودًا
+        const fs = require('fs');
+        const path = require('path');
+        if (!fs.existsSync(SAVE_PATH)) {
+            fs.mkdirSync(SAVE_PATH, { recursive: true });
+        }
+
+        let cardsData = [];
+        const gallery = document.getElementById('card-gallery');
+        const contextMenu = document.getElementById('context-menu');
+
+        // تحميل البيانات المحفوظة عند بدء التشغيل
+        function loadSavedData() {
+            const jsonPath = path.join(SAVE_PATH, 'cards_data.json');
+            if (fs.existsSync(jsonPath)) {
+                const jsonData = fs.readFileSync(jsonPath, 'utf-8');
+                cardsData = JSON.parse(jsonData);
+
+                // إعادة بناء البطاقات
+                cardsData.forEach((card, index) => {
+                    createCard(card.text, card.image, index);
+                });
+            }
+        }
+
+        // إنشاء بطاقة جديدة
+        function createCard(text = '', image = '', index = null) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.dataset.index = index;
+
+            card.innerHTML = `
+                <!-- العنوان الجديد -->
+                <label for="prompt-text" style="font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem;">
+                    أدخل النص أو البرومبت الخاص بك هنا:
+                </label>
+                <textarea class="prompt-input">${text}</textarea>
+                <div class="drop-zone">اسحب الصورة هنا أو اضغط لاختيار ملف</div>
+                <input type="file" class="image-upload" accept="image/*" style="display: none;">
+                <img class="image-preview" src="${image}" alt="معاينة الصورة" style="${image ? '' : 'display: none;'}">
+                <div class="buttons-container">
+                    <button class="copy-btn">📋 نسخ البرومبت</button>
+                    <button class="delete-btn">🗑️ حذف البطاقة</button>
+                    <button class="share-btn" onclick="shareOnGitHub()">🌐 مشاركة</button>
+                </div>
+            `;
+            gallery.appendChild(card);
+
+            // إعداد السحب والإفلات
+            const dropZone = card.querySelector('.drop-zone');
+            const fileInput = card.querySelector('.image-upload');
+            const imagePreview = card.querySelector('.image-preview');
+
+            dropZone.addEventListener('click', () => fileInput.click());
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('dragover');
+            });
+            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                handleImageUpload(e.dataTransfer.files, imagePreview, card.dataset.index);
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                handleImageUpload(e.target.files, imagePreview, card.dataset.index);
+            });
+
+            // تحديث النص
+            const promptInput = card.querySelector('.prompt-input');
+            promptInput.addEventListener('input', () => {
+                cardsData[index].text = promptInput.value;
+            });
+
+            // زر نسخ البرومبت
+            card.querySelector('.copy-btn').addEventListener('click', () => {
+                const promptText = promptInput.value;
+                if (promptText.trim() === "") {
+                    alert("يرجى كتابة البرومبت أولاً!");
+                    return;
+                }
+                navigator.clipboard.writeText(promptText).then(() => {
+                    showNotification();
+                });
+            });
+
+            // زر حذف البطاقة
+            card.querySelector('.delete-btn').addEventListener('click', () => {
+                deleteCard(index);
+            });
+
+            // قائمة سياقية
+            card.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                contextMenu.style.top = `${e.clientY}px`;
+                contextMenu.style.left = `${e.clientX}px`;
+                contextMenu.style.display = 'block';
+
+                // تخزين الفهرس الحالي للبطاقة
+                contextMenu.dataset.index = index;
+            });
+        }
+
+        // معالجة رفع الصور
+        function handleImageUpload(files, imagePreview, index) {
+            const file = files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    cardsData[index].image = e.target.result;
+                    showNotification();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // حذف البطاقة
+        function deleteCard(index) {
+            cardsData.splice(index, 1);
+            renderCards();
+        }
+
+        // إعادة عرض البطاقات
+        function renderCards() {
+            gallery.innerHTML = '';
+            cardsData.forEach((card, index) => {
+                createCard(card.text, card.image, index);
+            });
+        }
+
+        // إضافة بطاقة جديدة
+        function addCard() {
+            const newIndex = cardsData.length;
+            cardsData.push({ text: '', image: '' });
+            createCard('', '', newIndex);
+        }
+
+        // حفظ البيانات
+        function saveData() {
+            cardsData.forEach((card, index) => {
+                if (card.image) {
+                    const base64Data = card.image.split(';base64,').pop();
+                    const imagePath = path.join(SAVE_PATH, `image_${index}.png`);
+                    fs.writeFileSync(imagePath, base64Data, { encoding: 'base64' });
+                }
+            });
+
+            const jsonData = JSON.stringify(cardsData, null, 2);
+            const jsonPath = path.join(SAVE_PATH, 'cards_data.json');
+            fs.writeFileSync(jsonPath, jsonData);
+
+            showNotification();
+        }
+
+        // قائمة سياقية
+        document.getElementById('reset-image-context').addEventListener('click', () => {
+            const index = contextMenu.dataset.index;
+            const card = document.querySelector(`.card[data-index="${index}"]`);
+            const imagePreview = card.querySelector('.image-preview');
+            imagePreview.src = '';
+            imagePreview.style.display = 'none';
+            cardsData[index].image = '';
+            showNotification();
+            contextMenu.style.display = 'none';
+        });
+
+        document.getElementById('edit-text-context').addEventListener('click', () => {
+            const index = contextMenu.dataset.index;
+            const card = document.querySelector(`.card[data-index="${index}"]`);
+            const promptInput = card.querySelector('.prompt-input');
+            promptInput.focus();
+            contextMenu.style.display = 'none';
+        });
+
+        document.getElementById('exit-app-context').addEventListener('click', () => {
+            window.close(); // إغلاق التطبيق
+        });
+
+        // إخفاء القائمة السياقية عند النقر خارجها
+        document.addEventListener('click', () => {
+            contextMenu.style.display = 'none';
+        });
+
+        // تحميل البيانات عند بدء التشغيل
+        loadSavedData();
+
+        // وظيفة المشاركة على GitHub
+        function shareOnGitHub() {
+            window.open('https://github.com/zraiee/ai-image-app-prompt', '_blank');
+        }
+
+        // الحفظ التلقائي كل دقيقة
+        setInterval(() => {
+            saveData();
+            console.log('تم الحفظ التلقائي للبيانات.');
+        }, 60000); // 60,000 مللي ثانية = 1 دقيقة
+
+        // إظهار/إخفاء معلومات التواصل
+        function toggleContactInfo() {
+            const contactInfo = document.getElementById('contact-info');
+            contactInfo.style.display = contactInfo.style.display === 'block' ? 'none' : 'block';
+        }
+    </script>
+</body>
+</html>
