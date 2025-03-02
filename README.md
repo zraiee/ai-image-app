@@ -1,4 +1,5 @@
 🔧 Possible Solutions
+
 1️⃣ Check if Node.js and npm are installed
 Since npm comes bundled with Node.js, first check if Node.js is installed by running:
 
@@ -14,6 +15,7 @@ Download and install Node.js from the official website: 🔗 https://nodejs.org/
 Choose the LTS (Long-Term Support) version for stability.
 During installation, make sure to check the option "Add to PATH".
 Once installed, restart your computer.
+
 2️⃣ Verify npm installation
 After installing Node.js, check if npm is working by running:
 
@@ -51,6 +53,7 @@ bash
 نسخ
 تحرير
 npm -v
+
 4️⃣ Reinstall npm Manually
 If npm is still not recognized, try reinstalling it:
 
